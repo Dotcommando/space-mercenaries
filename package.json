@@ -1,0 +1,17 @@
+{
+  "name": "space-mercenaries-1",
+  "version": "0.1.0",
+  "author": "Mikhail Filchushkin <webestet@gmail.com>",
+  "private": true,
+  "license": "UNLICENCED",
+  "scripts": {
+  },
+  "engines": {
+    "node": ">=16",
+    "npm": ">=8"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}
