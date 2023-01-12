@@ -1,9 +1,14 @@
 import Phaser from 'phaser';
 
+import { Ship } from './classes';
+import { ShieldDirection } from './constants';
+
 const windowWidth = window.innerWidth;
 const windowHeight = window.innerHeight;
+
 class Sandbox extends Phaser.Scene {
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  private playerShip: Ship;
   private player: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
   private text: Phaser.GameObjects.Text;
   private gridContainer: Phaser.GameObjects.Container;
@@ -38,14 +43,74 @@ class Sandbox extends Phaser.Scene {
     this.physics.world.setBounds(-1024 * 1.5, -1024 * 1.5, 1024 * 3, 1024 * 3);
 
     this.cursors = this.input.keyboard.createCursorKeys();
-    this.player = this.physics.add.image(0, 0, 'whiteRex');
+    // this.player = this.physics.add.image(0, 0, 'whiteRex');
+    this.playerShip = new Ship({
+      values: {
+        acceleration: 2,
+        maxSpeed: 500,
+        angularVelocity: 300,
+        health: 80,
+        shield: {
+          axisX: {
+            maxStacks: 2,
+            stackDiff: 0,
+            maxPower: 50,
+            power: 100,
+          },
+          axisY: {
+            maxStacks: 2,
+            stackDiff: 0,
+            maxPower: 50,
+            power: 100,
+          },
+          [ShieldDirection.NORTH]: {
+            direction: ShieldDirection.NORTH,
+            disabled: false,
+            punched: false,
+            stack: 2,
+            power: 50,
+            regeneration: .25,
+            redirected: 0,
+          },
+          [ShieldDirection.EAST]: {
+            direction: ShieldDirection.NORTH,
+            disabled: false,
+            punched: false,
+            stack: 2,
+            power: 50,
+            regeneration: .25,
+            redirected: 0,
+          },
+          [ShieldDirection.SOUTH]: {
+            direction: ShieldDirection.NORTH,
+            disabled: false,
+            punched: false,
+            stack: 2,
+            power: 50,
+            regeneration: .25,
+            redirected: 0,
+          },
+          [ShieldDirection.WEST]: {
+            direction: ShieldDirection.NORTH,
+            disabled: false,
+            punched: false,
+            stack: 2,
+            power: 50,
+            regeneration: .25,
+            redirected: 0,
+          },
+        },
+      },
+      scene: this,
+    });
+    this.player = this.playerShip.getShip(); // this.physics.add.image(0, 0, 'whiteRex');
 
-    this.player.setCollideWorldBounds(true);
-    this.player.setScale(.25);
-    this.player.setDamping(true);
-    this.player.setDrag(0.99);
-    this.player.setMaxVelocity(500);
-    this.player.setAcceleration(2);
+    // this.player.setCollideWorldBounds(true);
+    // this.player.setScale(.25);
+    // this.player.setDamping(true);
+    // this.player.setDrag(0.99);
+    // this.player.setMaxVelocity(500);
+    // this.player.setAcceleration(2);
 
     this.cameras.main.startFollow(this.player, true);
 
