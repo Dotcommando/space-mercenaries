@@ -1,6 +1,6 @@
-import { IProps } from './props.interface';
+import { IShipProps } from './ship-props.interface';
 
 export interface IShip {
-  defaultValues: IProps;
+  defaultValues: IShipProps;
   alive: boolean;
 }

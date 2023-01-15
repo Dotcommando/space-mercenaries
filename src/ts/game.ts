@@ -1,54 +1,31 @@
 import Phaser from 'phaser';
 
-import { Ship } from './classes';
-import { ShieldDirection } from './constants';
+import { Scene, Ship } from './classes';
+import { ShieldDirection, SHIP_MODEL } from './constants';
+import ImageWithDynamicBody = Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
 
 const windowWidth = window.innerWidth;
 const windowHeight = window.innerHeight;
 
-class Sandbox extends Phaser.Scene {
+class Sandbox extends Scene {
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   private playerShip: Ship;
-  private player: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
+  private player: ImageWithDynamicBody;
   private text: Phaser.GameObjects.Text;
   private gridContainer: Phaser.GameObjects.Container;
 
   constructor() {
-    super({});
+    super();
   }
 
   preload() {
-    this.load.image('bg', 'img/background/main/fantasy-purple-2048/purple-4.jpg');
-    this.load.image('grid', './img/background/grid.png');
-    this.load.image('whiteRex', './img/ships/white/rex.png');
-  }
-
-  create() {
-    // const bg = this.add.image(-Math.abs(3 * 1024 - 2048), -Math.abs(3 * 1024 - 2048), 'bg').setOrigin(0);
-    const bg = this.add.image(720 - Math.abs(3 * 1024 - 2048), 100 - Math.abs(3 * 1024 - 2048), 'bg').setOrigin(0).setScrollFactor(0.2);
-    const tiles = this.add.tileSprite(0, 0, 1024 * 3, 1024 * 3, 'grid').setName('grid');
-
-    this.gridContainer = this.add.container(0, 0, [ bg, tiles ]).setName('gridContainer');
-    this.input.keyboard.createCombo([
-      Phaser.Input.Keyboard.KeyCodes.DOWN,
-      Phaser.Input.Keyboard.KeyCodes.DOWN,
-    ], {
-      resetOnMatch: true,
-    });
-    this.input.keyboard.on('keycombomatch', function(event) {
-      console.log(event);
-    });
-    //  Set the camera and physics bounds to be the size of 4x4 bg images
-    this.cameras.main.setBounds(-1024 * 1.5, -1024 * 1.5, 1024 * 3, 1024 * 3);
-    this.physics.world.setBounds(-1024 * 1.5, -1024 * 1.5, 1024 * 3, 1024 * 3);
-
-    this.cursors = this.input.keyboard.createCursorKeys();
-    // this.player = this.physics.add.image(0, 0, 'whiteRex');
     this.playerShip = new Ship({
       values: {
         acceleration: 2,
         maxSpeed: 500,
         angularVelocity: 300,
+        damageAbsorption: 0,
+        damageReducing: 0,
         health: 80,
         shield: {
           axisX: {
@@ -102,15 +79,42 @@ class Sandbox extends Phaser.Scene {
         },
       },
       scene: this,
+      model: {
+        type: SHIP_MODEL.ALPHA_RED,
+      },
     });
-    this.player = this.playerShip.getShip(); // this.physics.add.image(0, 0, 'whiteRex');
 
-    // this.player.setCollideWorldBounds(true);
-    // this.player.setScale(.25);
-    // this.player.setDamping(true);
-    // this.player.setDrag(0.99);
-    // this.player.setMaxVelocity(500);
-    // this.player.setAcceleration(2);
+    super.preload([
+      this.playerShip,
+    ]);
+    this.load.image('bg', 'img/background/main/fantasy-purple-2048/purple-4.jpg');
+    this.load.image('grid', './img/background/grid.png');
+  }
+
+  create() {
+    super.create();
+    const bg = this.add.image(720 - Math.abs(3 * 1024 - 2048), 100 - Math.abs(3 * 1024 - 2048), 'bg').setOrigin(0).setScrollFactor(0.2);
+    const tiles = this.add.tileSprite(0, 0, 1024 * 3, 1024 * 3, 'grid').setName('grid');
+
+    this.gridContainer = this.add.container(0, 0, [ bg, tiles ]).setName('gridContainer');
+    this.input.keyboard.createCombo([
+      Phaser.Input.Keyboard.KeyCodes.DOWN,
+      Phaser.Input.Keyboard.KeyCodes.DOWN,
+    ], {
+      resetOnMatch: true,
+    });
+    this.input.keyboard.on('keycombomatch', function(event) {
+      console.log(event);
+    });
+    //  Set the camera and physics bounds to be the size of 4x4 bg images
+    this.cameras.main.setBounds(-1024 * 1.5, -1024 * 1.5, 1024 * 3, 1024 * 3);
+    this.physics.world.setBounds(-1024 * 1.5, -1024 * 1.5, 1024 * 3, 1024 * 3);
+
+    this.cursors = this.input.keyboard.createCursorKeys();
+
+
+    this.player = this.physics.add.image(...this.playerShip.getDataForCreatingShip());
+    this.playerShip.setShip(this.player);
 
     this.cameras.main.startFollow(this.player, true);
 
